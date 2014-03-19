@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>HeatMap</title>
+    <style>
+    body{
+        text-align: center;
+        background-color: #ffffff;
+    }
+    svg{
+        margin: auto;
+        background-color: #ffffff;
+    }
+    </style>
+</head>
+<body>
+    <h1>Library HeatMap</h1>
+    <iframe height="300" width="500" frameborder="0" src="" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script>
+        bookshelves = [
+            {"name": "B1",  "id":1, "url":"//photosynth.net/preview/embed/5ab077ec-3841-4583-bfae-0be8cfd71907?delayload=true&autoplay=true"},
+            {"name": "B2",  "id":2, "url":"//photosynth.net/preview/embed/df767fe7-e2d5-4a06-8468-db4391a49c04?delayload=true&autoplay=true"},
+            {"name": "B3",  "id":3, "url":"//photosynth.net/preview/embed/bb507f4a-faff-4c3a-b1ff-f2c219ca671c?delayload=true&autoplay=true"},
+            {"name": "B4",  "id":4, "url":"//photosynth.net/preview/embed/2cf9adb6-62d3-487c-8541-218129aba2b5?delayload=true&autoplay=true"},
+            {"name": "B5",  "id":5, "url":"//photosynth.net/preview/embed/8f060b07-f5c7-4e31-abe6-1ceb915f5e12?delayload=true&autoplay=true"},
+            {"name": "B6",  "id":6, "url":"//photosynth.net/preview/embed/bad67efb-4049-4f5f-9de0-bfa06bce9b2a?delayload=true&autoplay=true"},
+            {"name": "B7",  "id":7, "url":"//photosynth.net/preview/embed/5266d807-da4f-4ed1-bb6b-7d0da70cab56?delayload=true&autoplay=true"},
+            {"name": "B8",  "id":8, "url":"//photosynth.net/preview/embed/a1c8db69-d644-4613-b164-33518654be90?delayload=true&autoplay=true"},
+            {"name": "B9",  "id":9, "url":"//photosynth.net/preview/embed/244757f6-a598-4ed1-9b13-41e597eee3d9?delayload=true&autoplay=true"},
+            {"name": "B10",  "id":10, "url": "//photosynth.net/preview/embed/e8fab546-247d-49d0-93a3-0593c2ab3e97?delayload=true&autoplay=true"},
+            {"name": "B11",  "id":11, "url": "//photosynth.net/preview/embed/05ef94be-ec5f-4018-91f2-a45c1b0602e1?delayload=true&autoplay=true"},
+            {"name": "B12",  "id":12, "url": "None"},
+            {"name": "B13",  "id":13, "url": "//photosynth.net/preview/embed/1f773207-ed95-4feb-a9c0-51e244d97503?delayload=true&autoplay=true"},
+            {"name": "B14",  "id":14, "url": "None"},
+            {"name": "B15",  "id":15, "url": "//photosynth.net/preview/embed/691362d7-203c-4e7c-af73-57810599c26a?delayload=true&autoplay=true"},
+            {"name": "B16",  "id":16, "url": "//photosynth.net/preview/embed/cc34ab84-5b36-4049-ab1b-59ae2ee382ee?delayload=true&autoplay=true"},
+            {"name": "B17",  "id":17, "url": "//photosynth.net/preview/embed/cce95a0b-200d-4ba9-9524-ccb51603212b?delayload=true&autoplay=true"},
+            {"name": "B18",  "id":18, "url": "//photosynth.net/preview/embed/4cd81342-14d2-4f3a-86bf-6bc43f8e83a2?delayload=true&autoplay=true"},
+            {"name": "B19",  "id":19, "url": "//photosynth.net/preview/embed/64da07f0-0cec-4714-b9fe-09bad0204b91?delayload=true&autoplay=true"},
+            {"name": "B20",  "id":20, "url": "//photosynth.net/preview/embed/b03abdfa-d657-4546-a2b1-3c34712511de?delayload=true&autoplay=true"},
+            {"name": "B21",  "id":21, "url": "//photosynth.net/preview/embed/54c1ba0e-d643-46f2-9313-93bb44b0a5b6?delayload=true&autoplay=true"},
+            {"name": "B22",  "id":22, "url":"//photosynth.net/preview/embed/3dc7c45f-fe2c-4a51-9659-2bb6a4b23c8e?delayload=true&autoplay=true"},
+            {"name": "B23",  "id":23, "url":"//photosynth.net/preview/embed/23010d4d-bf5e-4950-a013-e864bd8e7962?delayload=true&autoplay=true"},
+            {"name": "B24",  "id":24, "url":"//photosynth.net/preview/embed/50ce3ca4-cbce-4751-a084-36ee6cc56536?delayload=true&autoplay=true"},
+            {"name": "B25",  "id":25, "url":"//photosynth.net/preview/embed/8d35d555-4b9f-495a-94c7-4e0bd8ce0d6e?delayload=true&autoplay=true"},
+            {"name": "B26",  "id":26, "url":"//photosynth.net/preview/embed/41b392e8-b967-4533-93f1-50732bd39db7?delayload=true&autoplay=true"},
+            {"name": "B27",  "id":27, "url":"None"},
+            
+        ];
+        d3.json("./js/all.json", function(error, json){
+                // image_length = 0;
+                if(error) return console.log(error);
+                images = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                          0,0,0,0,0,0,0,0,0,0,0,0,0];
+                console.log(json['user'].length);
+                for (var i = 0; i < json['user'].length; i++) {
+                    images[json['user'][i]['match_marker']-1] ++;
+                }
+                for (var i = 0; i < images.length; i++) {
+                    bookshelves[i]['images'] = images[i];
+                }
+                console.log(images);
+                draw();
+           });
+
+        function draw(){
+            var width = window.innerWidth * 0.9,
+                height = window.innerHeight * 0.5;
+
+            var svg = d3.select("body").append("svg:svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            var shelfW = width / (bookshelves.length * 2),
+                shelfH = height / 2;
+
+            var redScale = d3.scale.linear()
+                                .domain([0, d3.max(bookshelves, function(d){
+                                    // console.log(d.images);
+                                    return d.images})])
+                                .range([0, 255]);
+
+            //BockShelf rendering.
+            svg.selectAll("rect")
+                .data(bookshelves)
+                .enter()
+                .append("g")
+                .append("rect")
+                .attr("x", function(d,i) {
+                    if(i%2 == 0)  return  width/ bookshelves.length * (i);
+                        return width/ bookshelves.length * (i+1) - shelfW;
+                    })
+                .attr("y", function() { return  height/2 - shelfH/2; })
+                .attr("width", shelfW)
+                .attr("height", shelfH)
+                .attr("stroke-width", 1)
+                .style("fill", function(d){return "rgb(255,255,255)";})
+                .style("stroke", 'black')
+                .transition()
+                .duration(2000)
+                .style("fill", function(d){
+                        return "rgb(255,"+(255-redScale(d.images))+","+(255-redScale(d.images))+")";});
+
+            svg.selectAll("g")
+                .append("text")
+                .data(bookshelves)
+                .attr("x",function(d,i){
+                        if(i%2 == 0)  return  width/ bookshelves.length * (i);
+                        return width/ bookshelves.length * (i+1) - shelfW;
+                    })
+                .attr("y", function() { return  height/2 - shelfH/2 -10; })
+                .attr("font-size",shelfW/2)
+                .text(function(d){return d.name;});
+
+            //Click events.
+            svg.selectAll("rect")
+                .on("click",function(d){
+                        d3.select("h1")
+                            .text(d['name']);
+                        d3.select("iframe")
+                            .attr("src", d.url);
+                    });
+
+            //color bar
+            gradient = svg.append("svg:defs")
+                .append("svg:linearGradient")
+                  .attr("id", "gradient")
+                  .attr("x1", "0%")
+                  .attr("y1", "0%")
+                  .attr("x2", "100%")
+                  .attr("y2", "0%");
+
+                gradient.append("svg:stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", "rgb(255,255,255)")
+                    .attr("stop-opacity", 1);
+
+                gradient.append("svg:stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", "rgb(255,0,0)")
+                    .attr("stop-opacity", 1);
+
+            var cAxis = d3.svg.axis().scale(redScale).orient("bottom").tickValues([0,d3.max(bookshelves, function(d){return d.images})/2,d3.max(bookshelves, function(d){return d.images})]);
+
+            svg.append("g")
+                .attr("transform", "translate(10,"+height/1.2+")")
+                .call(cAxis)
+                .selectAll("path,line")
+                .attr("fill", "url(#gradient)")
+                .attr("stroke", "black")
+                .attr("shape-rendering", "crispEdges"); 
+                }
+    </script>
+</body>
+</html>
